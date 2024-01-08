@@ -112,7 +112,12 @@ func New(ctx context.Context, conf *config.Config, indexer indexer.Service, matc
 				Msg("received error configuring auth middleware")
 			return nil, err
 		}
-		ret = h
+		final := http.NewServeMux()
+		final.Handle("/robots.txt", robotsHandler)
+		final.Handle("/", h)
+		ret = final
+	} else {
+		mux.Handle("/robots.txt", robotsHandler)
 	}
 	return ret, nil
 }
